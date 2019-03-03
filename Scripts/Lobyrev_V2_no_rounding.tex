@@ -1,0 +1,679 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Lobyerev V1},
+            pdfauthor={Itai van Rijn},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\newcommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Lobyerev V1}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Itai van Rijn}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{February 24, 2019}
+
+
+\begin{document}
+\maketitle
+
+\subsection{implementation of Lobyerev \& Hoffman (2008) Selectivity
+model}\label{implementation-of-lobyerev-hoffman-2008-selectivity-model}
+
+This document describes the implementation of the selectivity algorithm
+described in Lobyrev, Feodor, and Matthew J. Hoffman. ``A morphological
+and geometric method for estimating the selectivity of gill nets.''
+Reviews in Fish Biology and Fisheries 28.4 (2018): 909-924.
+
+\subsubsection{Step 1: Import field data on fish catch and gill net
+properties}\label{step-1-import-field-data-on-fish-catch-and-gill-net-properties}
+
+\paragraph{Step 1.1: Import catch
+data}\label{step-1.1-import-catch-data}
+
+Catch data structure: Column 1: `Mesh\_size' - name of the net (later
+connected to net properties under the same name) Column 2:
+`Length\_group' - Fish total length (cm) Column 3: `Wedged' - Number of
+wedged individuals Column 4: `Tangled' - Number of tangled individuals
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Catch.data.Cod <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"~/kinneret modeling/selectivity/R code Feodor paper/Data/Catch data Cod.csv"}\NormalTok{)}
+\CommentTok{#Show the first 6 lines:}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{head}\NormalTok{(Catch.data.Cod))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size Length_group Wedged Tangled
+## 1        20           14      2       2
+## 2        20           16     20       5
+## 3        20           18     15      12
+## 4        20           20     11       8
+## 5        20           22     20      18
+## 6        20           24     32      24
+\end{verbatim}
+
+\paragraph{Step 1.2: Import table of net
+properties}\label{step-1.2-import-table-of-net-properties}
+
+Net properties data structure: (See Figure 2 in paper) Column 1:
+`Mesh\_size' - mesh size (knot to knot) (mm) Column 2: `y' - Smaller of
+the angels between mesh threads
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{net.properties <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"~/kinneret modeling/selectivity/R code Feodor paper/Data/net properties.csv"}\NormalTok{)}
+\CommentTok{#Show table:}
+\KeywordTok{print}\NormalTok{(net.properties)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size  y
+## 1        20 60
+## 2        25 60
+## 3        30 60
+\end{verbatim}
+
+\paragraph{Step 1.3: Add angel in
+Radian}\label{step-1.3-add-angel-in-radian}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{net.properties}\OperatorTok{$}\NormalTok{Radian=}\FloatTok{0.018}\OperatorTok{*}\NormalTok{net.properties}\OperatorTok{$}\NormalTok{y}
+\CommentTok{#Show table:}
+\KeywordTok{print}\NormalTok{(net.properties)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size  y Radian
+## 1        20 60   1.08
+## 2        25 60   1.08
+## 3        30 60   1.08
+\end{verbatim}
+
+\paragraph{Step 1.4: Define the angel between the end of upper and lower
+jaws
+(phi)}\label{step-1.4-define-the-angel-between-the-end-of-upper-and-lower-jaws-phi}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{phi_deg=}\DecValTok{7}
+\NormalTok{phi_radian=}\FloatTok{0.018}\OperatorTok{*}\NormalTok{phi_deg}
+\end{Highlighting}
+\end{Shaded}
+
+\paragraph{Step 1.5: Calculate the jaw length approximated by the linear
+function}\label{step-1.5-calculate-the-jaw-length-approximated-by-the-linear-function}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{slope_jaw=}\FloatTok{1.02}
+\NormalTok{intecept_jaw=}\FloatTok{3.41}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{Jaw_length=intecept_jaw }\OperatorTok{+}\StringTok{ }\NormalTok{(slope_jaw}\OperatorTok{*}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{Length_group)}
+\CommentTok{#Calculate h}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{h=Catch.data.Cod}\OperatorTok{$}\NormalTok{Jaw_length }\OperatorTok{*}\StringTok{ }\KeywordTok{sin}\NormalTok{(phi_radian) }\OperatorTok{*}\StringTok{ }\DecValTok{2}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{head}\NormalTok{(Catch.data.Cod))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size Length_group Wedged Tangled Jaw_length        h
+## 1        20           14      2       2      17.69 4.446094
+## 2        20           16     20       5      19.73 4.958815
+## 3        20           18     15      12      21.77 5.471535
+## 4        20           20     11       8      23.81 5.984256
+## 5        20           22     20      18      25.85 6.496977
+## 6        20           24     32      24      27.89 7.009698
+\end{verbatim}
+
+\paragraph{Step 1.6: Merge the catch data with the net
+data}\label{step-1.6-merge-the-catch-data-with-the-net-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Catch.data.Cod=}\KeywordTok{merge}\NormalTok{(Catch.data.Cod,net.properties,}\DataTypeTok{by=}\StringTok{"Mesh_size"}\NormalTok{)}
+\CommentTok{#print first 6 lines}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{head}\NormalTok{(Catch.data.Cod))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size Length_group Wedged Tangled Jaw_length        h  y Radian
+## 1        20           14      2       2      17.69 4.446094 60   1.08
+## 2        20           16     20       5      19.73 4.958815 60   1.08
+## 3        20           18     15      12      21.77 5.471535 60   1.08
+## 4        20           20     11       8      23.81 5.984256 60   1.08
+## 5        20           22     20      18      25.85 6.496977 60   1.08
+## 6        20           24     32      24      27.89 7.009698 60   1.08
+\end{verbatim}
+
+\subsubsection{Step 2: Calculate P(O\textbar{}C) and
+P(Th\textbar{}C)}\label{step-2-calculate-poc-and-pthc}
+
+For calculating P(O\textbar{}C) use eq. 4 in the paper
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Calculate sin,cos,tan}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{sin=}\KeywordTok{sin}\NormalTok{(}\FloatTok{0.5}\OperatorTok{*}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{Radian)}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{cos=}\KeywordTok{cos}\NormalTok{(}\FloatTok{0.5}\OperatorTok{*}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{Radian)}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{tan=}\KeywordTok{tan}\NormalTok{(}\FloatTok{0.5}\OperatorTok{*}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{Radian)}
+\CommentTok{#Calculate P(O|C) Eq. 4}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{POC=(((Catch.data.Cod}\OperatorTok{$}\NormalTok{cos }\OperatorTok{*}\StringTok{ }\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{Mesh_size)}\OperatorTok{-}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{h)}\OperatorTok{*}\NormalTok{((Catch.data.Cod}\OperatorTok{$}\NormalTok{sin}\OperatorTok{*}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{Mesh_size)}\OperatorTok{-}\NormalTok{(Catch.data.Cod}\OperatorTok{$}\NormalTok{tan}\OperatorTok{*}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{h)))}\OperatorTok{/}\NormalTok{(Catch.data.Cod}\OperatorTok{$}\NormalTok{cos}\OperatorTok{*}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{sin}\OperatorTok{*}\NormalTok{(Catch.data.Cod}\OperatorTok{$}\NormalTok{Mesh_size)}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+\CommentTok{#Calculate P(Th|c)}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{PThC=}\DecValTok{1}\OperatorTok{-}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{POC}
+\CommentTok{#Print first 6 rows}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{head}\NormalTok{(Catch.data.Cod))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size Length_group Wedged Tangled Jaw_length        h  y Radian
+## 1        20           14      2       2      17.69 4.446094 60   1.08
+## 2        20           16     20       5      19.73 4.958815 60   1.08
+## 3        20           18     15      12      21.77 5.471535 60   1.08
+## 4        20           20     11       8      23.81 5.984256 60   1.08
+## 5        20           22     20      18      25.85 6.496977 60   1.08
+## 6        20           24     32      24      27.89 7.009698 60   1.08
+##        sin       cos       tan       POC      PThC
+## 1 0.514136 0.8577087 0.5994296 0.5488078 0.4511922
+## 2 0.514136 0.8577087 0.5994296 0.5054167 0.4945833
+## 3 0.514136 0.8577087 0.5994296 0.4638123 0.5361877
+## 4 0.514136 0.8577087 0.5994296 0.4239946 0.5760054
+## 5 0.514136 0.8577087 0.5994296 0.3859636 0.6140364
+## 6 0.514136 0.8577087 0.5994296 0.3497193 0.6502807
+\end{verbatim}
+
+\subsubsection{Step 3: Calculate
+P(W\textbar{}E)}\label{step-3-calculate-pwe}
+
+!!!!I just import the data from your Excel, but do not know how the
+calculation was made
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{PWE <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"~/kinneret modeling/selectivity/R code Feodor paper/Data/PWE.csv"}\NormalTok{, }\DataTypeTok{stringsAsFactors=}\OtherTok{FALSE}\NormalTok{)}
+\CommentTok{#print the first 6 lines}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{head}\NormalTok{(PWE))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size Length_group  PWE
+## 1        20           14 0.35
+## 2        20           16 0.69
+## 3        20           18 0.81
+## 4        20           20 0.88
+## 5        20           22 0.88
+## 6        20           24 1.00
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#merge with table 'Catch.data.Cod'}
+\NormalTok{Catch.data.Cod=}\KeywordTok{merge}\NormalTok{(Catch.data.Cod,PWE ,}\DataTypeTok{by=}\KeywordTok{c}\NormalTok{(}\StringTok{"Mesh_size"}\NormalTok{,    }\StringTok{"Length_group"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Step 4: Calculate Eq. 2}\label{step-4-calculate-eq.-2}
+
+\paragraph{Step 4.1: Calculate P(E\textbar{}O) by the linear
+equation}\label{step-4.1-calculate-peo-by-the-linear-equation}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{##Get the min and max size groups for each net}
+\CommentTok{#Create table}
+\NormalTok{net_PEO=}\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{Mesh_size=}\KeywordTok{unique}\NormalTok{(Catch.data.Cod}\OperatorTok{$}\NormalTok{Mesh_size))}
+\CommentTok{#Length group interval}
+\NormalTok{Length_group_interval=}\DecValTok{2}
+\CommentTok{#The minimal size for each net}
+\NormalTok{min_wedged=}\KeywordTok{data.frame}\NormalTok{(Catch.data.Cod }\OperatorTok{%>%}
+\StringTok{   }\KeywordTok{filter}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(Wedged)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(Mesh_size) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{min_size =} \KeywordTok{min}\NormalTok{(Length_group, }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{)))}
+\CommentTok{#The maximal size for each net}
+\NormalTok{max_wedged=}\KeywordTok{data.frame}\NormalTok{(Catch.data.Cod }\OperatorTok{%>%}
+\StringTok{   }\KeywordTok{filter}\NormalTok{(}\OperatorTok{!}\KeywordTok{is.na}\NormalTok{(Wedged)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(Mesh_size) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{max_size =} \KeywordTok{max}\NormalTok{(Length_group, }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{)))}
+\CommentTok{#merge}
+\NormalTok{net_PEO=}\KeywordTok{merge}\NormalTok{(net_PEO,min_wedged,}\DataTypeTok{by=}\StringTok{"Mesh_size"}\NormalTok{)}
+\NormalTok{net_PEO=}\KeywordTok{merge}\NormalTok{(net_PEO,max_wedged,}\DataTypeTok{by=}\StringTok{"Mesh_size"}\NormalTok{)}
+\CommentTok{#Substract and add the Length group interval}
+\NormalTok{net_PEO}\OperatorTok{$}\NormalTok{min_size=net_PEO}\OperatorTok{$}\NormalTok{min_size}\OperatorTok{-}\NormalTok{(Length_group_interval}\OperatorTok{/}\DecValTok{2}\NormalTok{)}
+\NormalTok{net_PEO}\OperatorTok{$}\NormalTok{max_size=net_PEO}\OperatorTok{$}\NormalTok{max_size}\OperatorTok{+}\NormalTok{(Length_group_interval}\OperatorTok{/}\DecValTok{2}\NormalTok{)}
+\CommentTok{#Calculate the linear function}
+\NormalTok{net_PEO}\OperatorTok{$}\NormalTok{slope=}\OperatorTok{-}\DecValTok{1}\OperatorTok{/}\NormalTok{(net_PEO}\OperatorTok{$}\NormalTok{max_size}\OperatorTok{-}\NormalTok{net_PEO}\OperatorTok{$}\NormalTok{min_size)}
+\NormalTok{net_PEO}\OperatorTok{$}\NormalTok{intercept=}\DecValTok{1}\OperatorTok{-}\NormalTok{(net_PEO}\OperatorTok{$}\NormalTok{slope}\OperatorTok{*}\NormalTok{net_PEO}\OperatorTok{$}\NormalTok{min_size)}
+\CommentTok{#print}
+\KeywordTok{print}\NormalTok{(net_PEO)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size min_size max_size       slope intercept
+## 1        20       13       31 -0.05555556  1.722222
+## 2        25       17       35 -0.05555556  1.944444
+## 3        30       21       37 -0.06250000  2.312500
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Calculate PEO}
+\CommentTok{#Merge slope and intercept to data}
+\NormalTok{Catch.data.Cod=}\KeywordTok{merge}\NormalTok{(Catch.data.Cod,net_PEO,}\DataTypeTok{by=}\StringTok{"Mesh_size"}\NormalTok{)}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{PEO=Catch.data.Cod}\OperatorTok{$}\NormalTok{intercept}\OperatorTok{+}\NormalTok{(Catch.data.Cod}\OperatorTok{$}\NormalTok{Length_group)}\OperatorTok{*}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{slope}
+\CommentTok{#Remove PEO values if no fish were wedged}
+\NormalTok{Catch.data.Cod[}\KeywordTok{is.na}\NormalTok{(Catch.data.Cod}\OperatorTok{$}\NormalTok{Wedged),}\StringTok{"PEO"}\NormalTok{]=}\OtherTok{NA}
+\CommentTok{#Print first 6 lines}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{head}\NormalTok{(Catch.data.Cod))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size Length_group Wedged Tangled Jaw_length        h  y Radian
+## 1        20           14      2       2      17.69 4.446094 60   1.08
+## 2        20           16     20       5      19.73 4.958815 60   1.08
+## 3        20           18     15      12      21.77 5.471535 60   1.08
+## 4        20           20     11       8      23.81 5.984256 60   1.08
+## 5        20           22     20      18      25.85 6.496977 60   1.08
+## 6        20           24     32      24      27.89 7.009698 60   1.08
+##        sin       cos       tan       POC      PThC  PWE min_size max_size
+## 1 0.514136 0.8577087 0.5994296 0.5488078 0.4511922 0.35       13       31
+## 2 0.514136 0.8577087 0.5994296 0.5054167 0.4945833 0.69       13       31
+## 3 0.514136 0.8577087 0.5994296 0.4638123 0.5361877 0.81       13       31
+## 4 0.514136 0.8577087 0.5994296 0.4239946 0.5760054 0.88       13       31
+## 5 0.514136 0.8577087 0.5994296 0.3859636 0.6140364 0.88       13       31
+## 6 0.514136 0.8577087 0.5994296 0.3497193 0.6502807 1.00       13       31
+##         slope intercept       PEO
+## 1 -0.05555556  1.722222 0.9444444
+## 2 -0.05555556  1.722222 0.8333333
+## 3 -0.05555556  1.722222 0.7222222
+## 4 -0.05555556  1.722222 0.6111111
+## 5 -0.05555556  1.722222 0.5000000
+## 6 -0.05555556  1.722222 0.3888889
+\end{verbatim}
+
+\paragraph{Step 4.2: Claculate Eq.2}\label{step-4.2-claculate-eq.2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{Ntotal=Catch.data.Cod}\OperatorTok{$}\NormalTok{Wedged}\OperatorTok{/}\NormalTok{(Catch.data.Cod}\OperatorTok{$}\NormalTok{POC}\OperatorTok{*}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{PWE}\OperatorTok{*}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{PEO)}
+\CommentTok{#Print first 6 lines}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{head}\NormalTok{(Catch.data.Cod))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size Length_group Wedged Tangled Jaw_length        h  y Radian
+## 1        20           14      2       2      17.69 4.446094 60   1.08
+## 2        20           16     20       5      19.73 4.958815 60   1.08
+## 3        20           18     15      12      21.77 5.471535 60   1.08
+## 4        20           20     11       8      23.81 5.984256 60   1.08
+## 5        20           22     20      18      25.85 6.496977 60   1.08
+## 6        20           24     32      24      27.89 7.009698 60   1.08
+##        sin       cos       tan       POC      PThC  PWE min_size max_size
+## 1 0.514136 0.8577087 0.5994296 0.5488078 0.4511922 0.35       13       31
+## 2 0.514136 0.8577087 0.5994296 0.5054167 0.4945833 0.69       13       31
+## 3 0.514136 0.8577087 0.5994296 0.4638123 0.5361877 0.81       13       31
+## 4 0.514136 0.8577087 0.5994296 0.4239946 0.5760054 0.88       13       31
+## 5 0.514136 0.8577087 0.5994296 0.3859636 0.6140364 0.88       13       31
+## 6 0.514136 0.8577087 0.5994296 0.3497193 0.6502807 1.00       13       31
+##         slope intercept       PEO    Ntotal
+## 1 -0.05555556  1.722222 0.9444444  11.02466
+## 2 -0.05555556  1.722222 0.8333333  68.81967
+## 3 -0.05555556  1.722222 0.7222222  55.28320
+## 4 -0.05555556  1.722222 0.6111111  48.24247
+## 5 -0.05555556  1.722222 0.5000000 117.76900
+## 6 -0.05555556  1.722222 0.3888889 235.29074
+\end{verbatim}
+
+\subsubsection{Step 5: Calculate CPUE}\label{step-5-calculate-cpue}
+
+(table 21)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Define the number of trials}
+\NormalTok{n_trials=}\DecValTok{11}
+\CommentTok{#Aggregate catch for each mesh size}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{CPUE=}\KeywordTok{rowSums}\NormalTok{(Catch.data.Cod[,}\KeywordTok{c}\NormalTok{(}\StringTok{"Wedged"}\NormalTok{,}\StringTok{"Tangled"}\NormalTok{)],}\DataTypeTok{na.rm=}\NormalTok{T)}\OperatorTok{/}\NormalTok{n_trials}
+\CommentTok{#Print first 6 lines}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{head}\NormalTok{(Catch.data.Cod))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size Length_group Wedged Tangled Jaw_length        h  y Radian
+## 1        20           14      2       2      17.69 4.446094 60   1.08
+## 2        20           16     20       5      19.73 4.958815 60   1.08
+## 3        20           18     15      12      21.77 5.471535 60   1.08
+## 4        20           20     11       8      23.81 5.984256 60   1.08
+## 5        20           22     20      18      25.85 6.496977 60   1.08
+## 6        20           24     32      24      27.89 7.009698 60   1.08
+##        sin       cos       tan       POC      PThC  PWE min_size max_size
+## 1 0.514136 0.8577087 0.5994296 0.5488078 0.4511922 0.35       13       31
+## 2 0.514136 0.8577087 0.5994296 0.5054167 0.4945833 0.69       13       31
+## 3 0.514136 0.8577087 0.5994296 0.4638123 0.5361877 0.81       13       31
+## 4 0.514136 0.8577087 0.5994296 0.4239946 0.5760054 0.88       13       31
+## 5 0.514136 0.8577087 0.5994296 0.3859636 0.6140364 0.88       13       31
+## 6 0.514136 0.8577087 0.5994296 0.3497193 0.6502807 1.00       13       31
+##         slope intercept       PEO    Ntotal      CPUE
+## 1 -0.05555556  1.722222 0.9444444  11.02466 0.3636364
+## 2 -0.05555556  1.722222 0.8333333  68.81967 2.2727273
+## 3 -0.05555556  1.722222 0.7222222  55.28320 2.4545455
+## 4 -0.05555556  1.722222 0.6111111  48.24247 1.7272727
+## 5 -0.05555556  1.722222 0.5000000 117.76900 3.4545455
+## 6 -0.05555556  1.722222 0.3888889 235.29074 5.0909091
+\end{verbatim}
+
+\subsubsection{Step 6: Calculate Nw per
+hour}\label{step-6-calculate-nw-per-hour}
+
+(table 23)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Define number of hours of single (??) field trial}
+\NormalTok{n_hours=}\DecValTok{12}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{Ntotal_per_hour=Catch.data.Cod}\OperatorTok{$}\NormalTok{Ntotal}\OperatorTok{/}\NormalTok{n_hours}
+\CommentTok{#Print first 6 lines}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{head}\NormalTok{(Catch.data.Cod))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size Length_group Wedged Tangled Jaw_length        h  y Radian
+## 1        20           14      2       2      17.69 4.446094 60   1.08
+## 2        20           16     20       5      19.73 4.958815 60   1.08
+## 3        20           18     15      12      21.77 5.471535 60   1.08
+## 4        20           20     11       8      23.81 5.984256 60   1.08
+## 5        20           22     20      18      25.85 6.496977 60   1.08
+## 6        20           24     32      24      27.89 7.009698 60   1.08
+##        sin       cos       tan       POC      PThC  PWE min_size max_size
+## 1 0.514136 0.8577087 0.5994296 0.5488078 0.4511922 0.35       13       31
+## 2 0.514136 0.8577087 0.5994296 0.5054167 0.4945833 0.69       13       31
+## 3 0.514136 0.8577087 0.5994296 0.4638123 0.5361877 0.81       13       31
+## 4 0.514136 0.8577087 0.5994296 0.4239946 0.5760054 0.88       13       31
+## 5 0.514136 0.8577087 0.5994296 0.3859636 0.6140364 0.88       13       31
+## 6 0.514136 0.8577087 0.5994296 0.3497193 0.6502807 1.00       13       31
+##         slope intercept       PEO    Ntotal      CPUE Ntotal_per_hour
+## 1 -0.05555556  1.722222 0.9444444  11.02466 0.3636364       0.9187218
+## 2 -0.05555556  1.722222 0.8333333  68.81967 2.2727273       5.7349724
+## 3 -0.05555556  1.722222 0.7222222  55.28320 2.4545455       4.6069330
+## 4 -0.05555556  1.722222 0.6111111  48.24247 1.7272727       4.0202057
+## 5 -0.05555556  1.722222 0.5000000 117.76900 3.4545455       9.8140830
+## 6 -0.05555556  1.722222 0.3888889 235.29074 5.0909091      19.6075616
+\end{verbatim}
+
+\subsubsection{Step 7:}\label{step-7}
+
+\paragraph{Step 7.1: SLl,t for each length class as
+Ntotal-Qt}\label{step-7.1-sllt-for-each-length-class-as-ntotal-qt}
+
+(table 24)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{SL_l_t=Catch.data.Cod}\OperatorTok{$}\NormalTok{Ntotal_per_hour}\OperatorTok{-}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{CPUE}
+\CommentTok{#Print first 6 lines}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{head}\NormalTok{(Catch.data.Cod))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size Length_group Wedged Tangled Jaw_length        h  y Radian
+## 1        20           14      2       2      17.69 4.446094 60   1.08
+## 2        20           16     20       5      19.73 4.958815 60   1.08
+## 3        20           18     15      12      21.77 5.471535 60   1.08
+## 4        20           20     11       8      23.81 5.984256 60   1.08
+## 5        20           22     20      18      25.85 6.496977 60   1.08
+## 6        20           24     32      24      27.89 7.009698 60   1.08
+##        sin       cos       tan       POC      PThC  PWE min_size max_size
+## 1 0.514136 0.8577087 0.5994296 0.5488078 0.4511922 0.35       13       31
+## 2 0.514136 0.8577087 0.5994296 0.5054167 0.4945833 0.69       13       31
+## 3 0.514136 0.8577087 0.5994296 0.4638123 0.5361877 0.81       13       31
+## 4 0.514136 0.8577087 0.5994296 0.4239946 0.5760054 0.88       13       31
+## 5 0.514136 0.8577087 0.5994296 0.3859636 0.6140364 0.88       13       31
+## 6 0.514136 0.8577087 0.5994296 0.3497193 0.6502807 1.00       13       31
+##         slope intercept       PEO    Ntotal      CPUE Ntotal_per_hour
+## 1 -0.05555556  1.722222 0.9444444  11.02466 0.3636364       0.9187218
+## 2 -0.05555556  1.722222 0.8333333  68.81967 2.2727273       5.7349724
+## 3 -0.05555556  1.722222 0.7222222  55.28320 2.4545455       4.6069330
+## 4 -0.05555556  1.722222 0.6111111  48.24247 1.7272727       4.0202057
+## 5 -0.05555556  1.722222 0.5000000 117.76900 3.4545455       9.8140830
+## 6 -0.05555556  1.722222 0.3888889 235.29074 5.0909091      19.6075616
+##       SL_l_t
+## 1  0.5550854
+## 2  3.4622451
+## 3  2.1523876
+## 4  2.2929329
+## 5  6.3595376
+## 6 14.5166525
+\end{verbatim}
+
+\paragraph{Step 7.2: N\_AP calculation}\label{step-7.2-n_ap-calculation}
+
+First the table of Nlim (table 22c) is defined, in reality it is in
+input
+
+!!!Notice- value of tau is very sensitive to the sum of the CPUE
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{###The next data frame will be an experimental input}
+\NormalTok{n_lim=}\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{Mesh_size=}\KeywordTok{c}\NormalTok{(}\DecValTok{20}\NormalTok{,}\DecValTok{25}\NormalTok{,}\DecValTok{30}\NormalTok{),}\DataTypeTok{Nlim=}\KeywordTok{c}\NormalTok{(}\DecValTok{36}\NormalTok{,}\DecValTok{32}\NormalTok{,}\DecValTok{12}\NormalTok{))}
+\CommentTok{#Sum CPUE per net}
+\NormalTok{CPUE=}\KeywordTok{data.frame}\NormalTok{(Catch.data.Cod }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(Mesh_size) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{CPUE_sum =} \KeywordTok{sum}\NormalTok{(CPUE, }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{)))}
+\CommentTok{#merge to n_lim table}
+\NormalTok{n_lim=}\KeywordTok{merge}\NormalTok{(n_lim,CPUE,}\DataTypeTok{by=}\StringTok{"Mesh_size"}\NormalTok{)}
+\CommentTok{#Calculate tau (table 25)}
+\NormalTok{n_lim}\OperatorTok{$}\NormalTok{tau=n_hours}\OperatorTok{/}\NormalTok{(}\OperatorTok{-}\KeywordTok{log}\NormalTok{(}\DecValTok{1}\OperatorTok{-}\NormalTok{(n_lim}\OperatorTok{$}\NormalTok{CPUE}\OperatorTok{/}\NormalTok{n_lim}\OperatorTok{$}\NormalTok{Nlim)))}
+\NormalTok{n_lim}\OperatorTok{$}\NormalTok{N_AP=((n_lim}\OperatorTok{$}\NormalTok{Nlim}\OperatorTok{*}\NormalTok{(}\FloatTok{1.71}\NormalTok{))}\OperatorTok{/}\NormalTok{n_lim}\OperatorTok{$}\NormalTok{tau)}\OperatorTok{*}\NormalTok{n_hours}
+\KeywordTok{print}\NormalTok{(n_lim)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size Nlim CPUE_sum       tau     N_AP
+## 1        20   36 25.09091 10.050904 73.49787
+## 2        25   32 26.27273  6.974731 94.14557
+## 3        30   12 11.72727  3.171088 77.65157
+\end{verbatim}
+
+\paragraph{Step 7.3: Size specific
+N\_AP}\label{step-7.3-size-specific-n_ap}
+
+!!!In table 26 you use data from table 24 (SL)- is SL=0 if there is no
+value for this length group in table 24?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Replace NA's in column 'SL_l_t' with 0}
+\NormalTok{Catch.data.Cod[}\KeywordTok{is.na}\NormalTok{(Catch.data.Cod}\OperatorTok{$}\NormalTok{SL_l_t),}\StringTok{"SL_l_t"}\NormalTok{]=}\DecValTok{0}
+\CommentTok{#merge }
+\NormalTok{Catch.data.Cod=}\KeywordTok{merge}\NormalTok{(Catch.data.Cod,n_lim,}\DataTypeTok{by=}\StringTok{"Mesh_size"}\NormalTok{)}
+\CommentTok{#Calculate N_AP per size class}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{N_AP_size=(Catch.data.Cod}\OperatorTok{$}\NormalTok{N_AP}\OperatorTok{*}\NormalTok{(Catch.data.Cod}\OperatorTok{$}\NormalTok{CPUE}\OperatorTok{/}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{CPUE_sum))}\OperatorTok{+}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{SL_l_t}
+\KeywordTok{print}\NormalTok{(}\KeywordTok{head}\NormalTok{(Catch.data.Cod))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Mesh_size Length_group Wedged Tangled Jaw_length        h  y Radian
+## 1        20           14      2       2      17.69 4.446094 60   1.08
+## 2        20           16     20       5      19.73 4.958815 60   1.08
+## 3        20           18     15      12      21.77 5.471535 60   1.08
+## 4        20           20     11       8      23.81 5.984256 60   1.08
+## 5        20           22     20      18      25.85 6.496977 60   1.08
+## 6        20           24     32      24      27.89 7.009698 60   1.08
+##        sin       cos       tan       POC      PThC  PWE min_size max_size
+## 1 0.514136 0.8577087 0.5994296 0.5488078 0.4511922 0.35       13       31
+## 2 0.514136 0.8577087 0.5994296 0.5054167 0.4945833 0.69       13       31
+## 3 0.514136 0.8577087 0.5994296 0.4638123 0.5361877 0.81       13       31
+## 4 0.514136 0.8577087 0.5994296 0.4239946 0.5760054 0.88       13       31
+## 5 0.514136 0.8577087 0.5994296 0.3859636 0.6140364 0.88       13       31
+## 6 0.514136 0.8577087 0.5994296 0.3497193 0.6502807 1.00       13       31
+##         slope intercept       PEO    Ntotal      CPUE Ntotal_per_hour
+## 1 -0.05555556  1.722222 0.9444444  11.02466 0.3636364       0.9187218
+## 2 -0.05555556  1.722222 0.8333333  68.81967 2.2727273       5.7349724
+## 3 -0.05555556  1.722222 0.7222222  55.28320 2.4545455       4.6069330
+## 4 -0.05555556  1.722222 0.6111111  48.24247 1.7272727       4.0202057
+## 5 -0.05555556  1.722222 0.5000000 117.76900 3.4545455       9.8140830
+## 6 -0.05555556  1.722222 0.3888889 235.29074 5.0909091      19.6075616
+##       SL_l_t Nlim CPUE_sum     tau     N_AP N_AP_size
+## 1  0.5550854   36 25.09091 10.0509 73.49787  1.620272
+## 2  3.4622451   36 25.09091 10.0509 73.49787 10.119661
+## 3  2.1523876   36 25.09091 10.0509 73.49787  9.342396
+## 4  2.2929329   36 25.09091 10.0509 73.49787  7.352569
+## 5  6.3595376   36 25.09091 10.0509 73.49787 16.478809
+## 6 14.5166525   36 25.09091 10.0509 73.49787 29.429263
+\end{verbatim}
+
+\subsubsection{Step 8: Calculate
+selectivity}\label{step-8-calculate-selectivity}
+
+(table 28)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{##Calculate selectivity}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{selectivity=Catch.data.Cod}\OperatorTok{$}\NormalTok{CPUE}\OperatorTok{/}\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{Ntotal_per_hour}
+\NormalTok{##plot}
+\NormalTok{Catch.data.Cod}\OperatorTok{$}\NormalTok{Mesh_size_fac=}\KeywordTok{as.character}\NormalTok{(Catch.data.Cod}\OperatorTok{$}\NormalTok{Mesh_size)}
+\KeywordTok{ggplot}\NormalTok{(Catch.data.Cod, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{Length_group, }\DataTypeTok{y=}\NormalTok{selectivity, }\DataTypeTok{group=}\NormalTok{Mesh_size_fac)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{color=}\NormalTok{Mesh_size_fac))}\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{color=}\NormalTok{Mesh_size_fac))}\OperatorTok{+}
+\StringTok{   }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"length Group"}\NormalTok{,}\DataTypeTok{y=}\StringTok{"Selectivity"}\NormalTok{,}\DataTypeTok{color=}\StringTok{"Mesh Size"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 25 rows containing missing values (geom_path).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 25 rows containing missing values (geom_point).
+\end{verbatim}
+
+\includegraphics{Lobyrev_V2_no_rounding_files/figure-latex/unnamed-chunk-16-1.pdf}
+
+
+\end{document}

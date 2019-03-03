@@ -1,0 +1,236 @@
+---
+title: "Lobyerev V1"
+author: "Itai van Rijn"
+date: "February 24, 2019"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+```
+
+## implementation of Lobyerev & Hoffman (2018) Selectivity model
+
+This document describes the implementation of the selectivity algorithm described in Lobyrev, Feodor, and Matthew J. Hoffman. "A morphological and geometric method for estimating the selectivity of gill nets." Reviews in Fish Biology and Fisheries 28.4 (2018): 909-924.
+
+###Step 1: Import field data on fish catch and gill net properties
+
+####Step 1.1: Import catch data
+
+Catch data structure:
+Column 1: 'Mesh_size' - name of the net (later connected to net properties under the same name)
+Column 2: 'Length_group' - Fish total length (cm)
+Column 3: 'Wedged' - Number of wedged individuals 
+Column 4: 'Tangled' - Number of tangled individuals
+```{r}
+Catch.data.Cod <- read.csv("~/kinneret modeling/selectivity/R code Feodor paper/Data/Catch data Cod.csv")
+#Show the first 6 lines:
+print(head(Catch.data.Cod))
+```
+
+####Step 1.2: Import table of net properties
+Net properties data structure: (See Figure 2 in paper)
+Column 1: 'Mesh_size' - mesh size (knot to knot) (mm)
+Column 2: 'y' - Smaller of the angels between mesh threads
+
+```{r}
+net.properties <- read.csv("~/kinneret modeling/selectivity/R code Feodor paper/Data/net properties.csv")
+#Show table:
+print(net.properties)
+```
+
+####Step 1.3: Add angel in Radian
+```{r}
+net.properties$Radian=0.018*net.properties$y
+#Show table:
+print(net.properties)
+```
+
+####Step 1.4: Define the angel between the end of upper and lower jaws (phi)
+```{r}
+phi_deg=7
+phi_radian=0.018*phi_deg
+```
+
+####Step 1.5: Calculate the jaw length approximated by the linear function
+```{r}
+slope_jaw=1.02
+intecept_jaw=3.41
+Catch.data.Cod$Jaw_length=intecept_jaw + (slope_jaw*Catch.data.Cod$Length_group)
+#Calculate h
+Catch.data.Cod$h=Catch.data.Cod$Jaw_length * sin(phi_radian) * 2
+print(head(Catch.data.Cod))
+```
+####Step 1.6: Merge the catch data with the net data
+```{r}
+Catch.data.Cod=merge(Catch.data.Cod,net.properties,by="Mesh_size")
+#print first 6 lines
+print(head(Catch.data.Cod))
+```
+
+###Step 2: Calculate P(O|C) and P(Th|C)
+For calculating P(O|C) use eq. 4 in the paper
+
+```{r}
+#Calculate sin,cos,tan
+Catch.data.Cod$sin=sin(0.5*Catch.data.Cod$Radian)
+Catch.data.Cod$cos=cos(0.5*Catch.data.Cod$Radian)
+Catch.data.Cod$tan=tan(0.5*Catch.data.Cod$Radian)
+#Calculate P(O|C) Eq. 4
+Catch.data.Cod$POC=(((Catch.data.Cod$cos * Catch.data.Cod$Mesh_size)-Catch.data.Cod$h)*((Catch.data.Cod$sin*Catch.data.Cod$Mesh_size)-(Catch.data.Cod$tan*Catch.data.Cod$h)))/(Catch.data.Cod$cos*Catch.data.Cod$sin*(Catch.data.Cod$Mesh_size)^2)
+#Calculate P(Th|c)
+Catch.data.Cod$PThC=1-Catch.data.Cod$POC
+#Print first 6 rows
+print(head(Catch.data.Cod))
+```
+
+###Step 3: Calculate P(W|E)
+!!!!I just import the data from your Excel, but do not know how the calculation was made
+```{r}
+PWE <- read.csv("~/kinneret modeling/selectivity/R code Feodor paper/Data/PWE.csv", stringsAsFactors=FALSE)
+#print the first 6 lines
+print(head(PWE))
+#merge with table 'Catch.data.Cod'
+Catch.data.Cod=merge(Catch.data.Cod,PWE ,by=c("Mesh_size",    "Length_group"))
+```
+Import data on maximal girth (G_max). In final version girth information will be part of the complete catch data
+```{r}
+G_max_wide <- read.csv("~/kinneret modeling/selectivity/R code Feodor paper/Data/G_max_wide.csv", stringsAsFactors=FALSE)
+#Transform to long format
+G_max_long=gather(G_max_wide, t, G_max, m1:m73, factor_key=TRUE)
+#Arrange table
+#Drop NA
+G_max_long=G_max_long[!is.na(G_max_long$length_group),]
+G_max_long=G_max_long[!is.na(G_max_long$G_max),]
+#Drop the second column 't'
+G_max_long=G_max_long[ , !names(G_max_long) %in% c("t")]
+#Order by first column
+G_max_long=G_max_long[order(G_max_long$length_group),]
+```
+###Step 4: Calculate Eq. 2
+
+####Step 4.1: Calculate P(E|O) by the linear equation
+
+```{r}
+##Get the min and max size groups for each net
+#Create table
+net_PEO=data.frame(Mesh_size=unique(Catch.data.Cod$Mesh_size))
+#Length group interval
+Length_group_interval=2
+#The minimal size for each net
+min_wedged=data.frame(Catch.data.Cod %>%
+   filter(!is.na(Wedged)) %>%
+  group_by(Mesh_size) %>%
+  summarize(min_size = min(Length_group, na.rm = TRUE)))
+#The maximal size for each net
+max_wedged=data.frame(Catch.data.Cod %>%
+   filter(!is.na(Wedged)) %>%
+  group_by(Mesh_size) %>%
+  summarize(max_size = max(Length_group, na.rm = TRUE)))
+#merge
+net_PEO=merge(net_PEO,min_wedged,by="Mesh_size")
+net_PEO=merge(net_PEO,max_wedged,by="Mesh_size")
+#Substract and add the Length group interval
+net_PEO$min_size=net_PEO$min_size-(Length_group_interval/2)
+net_PEO$max_size=net_PEO$max_size+(Length_group_interval/2)
+#Calculate the linear function
+net_PEO$slope=-1/(net_PEO$max_size-net_PEO$min_size)
+net_PEO$intercept=1-(net_PEO$slope*net_PEO$min_size)
+#print
+print(net_PEO)
+#Calculate PEO
+#Merge slope and intercept to data
+Catch.data.Cod=merge(Catch.data.Cod,net_PEO,by="Mesh_size")
+Catch.data.Cod$PEO=Catch.data.Cod$intercept+(Catch.data.Cod$Length_group)*Catch.data.Cod$slope
+#Remove PEO values if no fish were wedged
+Catch.data.Cod[is.na(Catch.data.Cod$Wedged),"PEO"]=NA
+#Print first 6 lines
+print(head(Catch.data.Cod))
+```
+
+####Step 4.2: Claculate Eq.2
+```{r}
+Catch.data.Cod$Ntotal=Catch.data.Cod$Wedged/(Catch.data.Cod$POC*Catch.data.Cod$PWE*Catch.data.Cod$PEO)
+#Print first 6 lines
+print(head(Catch.data.Cod))
+```
+
+###Step 5: Calculate CPUE
+(table 21)
+```{r}
+#Define the number of trials
+n_trials=11
+#Aggregate catch for each mesh size
+Catch.data.Cod$CPUE=rowSums(Catch.data.Cod[,c("Wedged","Tangled")],na.rm=T)/n_trials
+#Print first 6 lines
+print(head(Catch.data.Cod))
+```
+
+###Step 6: Calculate Nw per hour
+(table 23)
+```{r}
+#Define number of hours of single (??) field trial
+n_hours=12
+Catch.data.Cod$Ntotal_per_hour=Catch.data.Cod$Ntotal/n_hours
+#Print first 6 lines
+print(head(Catch.data.Cod))
+```
+
+###Step 7: 
+####Step 7.1: SLl,t for each length class as Ntotal-Qt
+(table 24)
+```{r}
+Catch.data.Cod$SL_l_t=Catch.data.Cod$Ntotal_per_hour-Catch.data.Cod$CPUE
+#Print first 6 lines
+print(head(Catch.data.Cod))
+```
+
+####Step 7.2: N_AP calculation
+First the table of Nlim (table 22c) is defined, in reality it is in input
+
+!!!Notice- value of tau is very sensitive to the sum of the CPUE
+```{r}
+###The next data frame will be an experimental input
+n_lim=data.frame(Mesh_size=c(20,25,30),Nlim=c(36,32,12))
+#Sum CPUE per net
+CPUE=data.frame(Catch.data.Cod %>%
+  group_by(Mesh_size) %>%
+  summarize(CPUE_sum = sum(CPUE, na.rm = TRUE)))
+#merge to n_lim table
+n_lim=merge(n_lim,CPUE,by="Mesh_size")
+#Calculate tau (table 25)
+n_lim$tau=n_hours/(-log(1-(n_lim$CPUE/n_lim$Nlim)))
+n_lim$N_AP=((n_lim$Nlim*(1.71))/n_lim$tau)*n_hours
+print(n_lim)
+```
+
+####Step 7.3: Size specific N_AP
+!!!In table 26 you use data from table 24 (SL)- is SL=0 if there is no value for this length group in table 24?
+```{r}
+#Replace NA's in column 'SL_l_t' with 0
+Catch.data.Cod[is.na(Catch.data.Cod$SL_l_t),"SL_l_t"]=0
+#merge 
+Catch.data.Cod=merge(Catch.data.Cod,n_lim,by="Mesh_size")
+#Calculate N_AP per size class
+Catch.data.Cod$N_AP_size=(Catch.data.Cod$N_AP*(Catch.data.Cod$CPUE/Catch.data.Cod$CPUE_sum))+Catch.data.Cod$SL_l_t
+print(head(Catch.data.Cod))
+```
+
+###Step 8: Calculate selectivity
+(table 28)
+```{r}
+##Calculate selectivity
+Catch.data.Cod$selectivity=Catch.data.Cod$CPUE/Catch.data.Cod$Ntotal_per_hour
+##plot
+Catch.data.Cod$Mesh_size_fac=as.character(Catch.data.Cod$Mesh_size)
+ggplot(Catch.data.Cod, aes(x=Length_group, y=selectivity, group=Mesh_size_fac)) +
+  geom_line(aes(color=Mesh_size_fac))+
+  geom_point(aes(color=Mesh_size_fac))+
+   labs(x = "length Group",y="Selectivity",color="Mesh Size")
+  
