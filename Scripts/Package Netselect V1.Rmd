@@ -1,0 +1,78 @@
+---
+title: "Package 'Netselect'"
+author: "Itai van Rijn"
+date: "March 4, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+###General package information (will be needed later for publishing the package)
+Version XXX
+
+Date XXX
+
+Title Gill net selectivity model
+
+Author XXX
+
+Maintainer XXX <mail@adress>
+
+Depends (R packages required)
+
+Description Functions for calculating gill net selectivity following Lobyerev & Hoffman 
+(2018) Selectivity model 
+
+License GPL (>= 2)
+
+RoxygenNote XXX
+
+NeedsCompilation no
+
+Repository CRAN
+
+Date/Publication XXX
+
+###List of functions
+
+R topics documented:
+
+###Description of data and functions
+
+#####__'Cod_selectivity_data'__ - Field survey data for calculating selectivity for multiple mesh-size
+
+__Description__
+
+The Cod_selectivity_data data frame has 694 rows and 6 columns. This field data was used for calculation of net selectivity for Cod (_Gadus morhua_)
+
+__Usage__
+
+Cod_selectivity_data
+
+__Format__
+
+This data frame contains the following columns:
+
+__Survey_index__ - Unique ID for each field trial
+
+__Net_name__ - Name of the net used
+
+__Mesh_size__ - Mesh size (mm knot-to-knot)
+
+__Length_FL__ - Fork length (cm)
+
+__Maximal_girth__ - Maximal body girth (mm)
+
+__Catch_method__ - Tangled or Wedged
+
+__Source__
+
+(Add some Ref. to the data)
+
+```{r}
+Cod_selectivity_data <- read.csv("~/kinneret modeling/selectivity/R code Feodor paper/Lobyerev-selectivity/Data/Cod_selectivity_data.csv")
+print(head(Cod_selectivity_data ))
+```
+
+

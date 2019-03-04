@@ -29,7 +29,7 @@ Column 2: 'Length_group' - Fish total length (cm)
 Column 3: 'Wedged' - Number of wedged individuals 
 Column 4: 'Tangled' - Number of tangled individuals
 ```{r}
-Catch.data.Cod <- read.csv("~/kinneret modeling/selectivity/R code Feodor paper/Data/Catch data Cod.csv")
+Catch.data.Cod <- read.csv("~/kinneret modeling/selectivity/R code Feodor paper/Lobyerev-selectivity/Data/Catch data Cod.csv")
 #Show the first 6 lines:
 print(head(Catch.data.Cod))
 ```
@@ -40,7 +40,7 @@ Column 1: 'Mesh_size' - mesh size (knot to knot) (mm)
 Column 2: 'y' - Smaller of the angels between mesh threads
 
 ```{r}
-net.properties <- read.csv("~/kinneret modeling/selectivity/R code Feodor paper/Data/net properties.csv")
+net.properties <- read.csv("~/kinneret modeling/selectivity/R code Feodor paper/Lobyerev-selectivity/Data/net properties.csv")
 #Show table:
 print(net.properties)
 ```
@@ -91,17 +91,10 @@ print(head(Catch.data.Cod))
 ```
 
 ###Step 3: Calculate P(W|E)
-!!!!I just import the data from your Excel, but do not know how the calculation was made
-```{r}
-PWE <- read.csv("~/kinneret modeling/selectivity/R code Feodor paper/Data/PWE.csv", stringsAsFactors=FALSE)
-#print the first 6 lines
-print(head(PWE))
-#merge with table 'Catch.data.Cod'
-Catch.data.Cod=merge(Catch.data.Cod,PWE ,by=c("Mesh_size",    "Length_group"))
-```
+
 Import data on maximal girth (G_max). In final version girth information will be part of the complete catch data
 ```{r}
-G_max_wide <- read.csv("~/kinneret modeling/selectivity/R code Feodor paper/Data/G_max_wide.csv", stringsAsFactors=FALSE)
+G_max_wide <- read.csv("~/kinneret modeling/selectivity/R code Feodor paper/Lobyerev-selectivity/Data/G_max_wide.csv", stringsAsFactors=FALSE)
 #Transform to long format
 G_max_long=gather(G_max_wide, t, G_max, m1:m73, factor_key=TRUE)
 #Arrange table
@@ -118,18 +111,21 @@ For each net calculate P(W|E)
 ```{r}
 #Calculate the girth which each net will retain
 net.properties$girth_retained=round(1.14*4*net.properties$Mesh_size)
-print(net.properties)
+#print(net.properties)
 #Calculate the P(W|E) for each length group. P(W|E) is the ratio between fish over net.properties$girth_retained and the total number of fish in each group_size for each net type
 PWE_t=expand.grid(net.properties$Mesh_size,unique(G_max_long$length_group)) %>% 
    rename(Mesh_size = Var1,
-          length_group = Var2) 
-  # left_join(net.properties) %>% 
-  # left_join(length_group) %>% 
-  # select(Mesh_size,girth_retained,length_group,G_max) %>% 
-  # mutate(is.bigger = G_max >= girth_retained) %>% 
-  # group_by(length_group,length_group) %>% 
-  # summarize(fract = sum(is.bigger)/n())
-
+          length_group = Var2)  %>%
+   left_join(net.properties) %>% 
+   left_join(G_max_long) %>% 
+   select(Mesh_size,girth_retained,length_group,G_max) %>% 
+   mutate(is.bigger = G_max >= girth_retained) %>% 
+   group_by(Mesh_size,length_group) %>% 
+   summarize(PWE = sum(is.bigger)/n()) %>%
+  rename(Length_group=length_group)
+PWE_t=data.frame(PWE_t)
+print(head(PWE_t))
+Catch.data.Cod=merge(Catch.data.Cod,PWE_t ,by=c("Mesh_size",    "Length_group"))
 ```
 ###Step 4: Calculate Eq. 2
 
