@@ -123,7 +123,7 @@ Calculate the height (h) of swimming fish mouth openning
 
 __Usage__
 
-Mouth_dimension(Survey_data = NULL, Net_data = NULL, slope_jaw = NULL, intercept_jaw = NULL, phi = NULL)
+Mouth_dimension(Survey_data = NULL, Net_data = NULL, slope_jaw = NULL, intercept_jaw = NULL, phi = NULL, length_group_bin=2)
 
 __Arguments__
 
@@ -136,6 +136,8 @@ slope_jaw - numeric value of the slope term of the linear equation concting body
 intercept_jaw - numeric value of the intercept term of the linear equation concting body length to jaw length
 
 phi - numeric angle between the ends of upper and lower jaws when the mouth is opened during ram ventilation
+
+length_group_bin - numeric value of the bin size used to aggregate fish to length groups
 
 __Details__
 
@@ -150,7 +152,7 @@ XXX
 __Function structure__
 
 ```{r}
-Mouth_dimension=function(Survey_data,Net_data,slope_jaw,intercept_jaw,phi){
+Mouth_dimension=function(Survey_data,Net_data,slope_jaw,intercept_jaw,phi,length_group_bin=2){
   ##Add angle in radians to Net_data
   Net_data$Radian=0.018*Net_data$y
   ##Transform phi to eadians
@@ -187,13 +189,15 @@ Calculate P(O|C) and P(Th|C).
 
 __Usage__
 
-POC_PThC(Survey_and_mouth_data = NULL, Net_data = NULL)
+POC_PThC(Survey_and_mouth_data = NULL, Net_data = NULL, length_group_bin=2)
 
 __Arguments__
 
 Survey_and_mouth_data - data frame of field survey data and mouth openning dimension (an output of function 'Mouth_dimension')
 
 Net_data - data frame of gill net properties (see: 'Net_properties_data') 
+
+length_group_bin - numeric value of the bin size used to aggregate fish to length groups
 
 __Details__
 
@@ -208,7 +212,11 @@ XXX
 __Function structure__
 
 ```{r}
-POC_PthC=function(Survey_and_mouth_data,Net_data){
+POC_PthC=function(Survey_and_mouth_data,Net_data,length_group_bin=2){
+  #Create length groups based on fish FL
+  Survey_data$Length_group=length_group_bin*round(Survey_and_mouth_data$Length_FL/length_group_bin)
+  ##
+  Survey_data=Survey_data[unique(Survey_data[,c("Mesh_zise","Length_group")]),]
   ##Add angle in radians to Net_data
   Net_data$Radian=0.018*Net_data$y
   ##Merge gill net properties table to survey data

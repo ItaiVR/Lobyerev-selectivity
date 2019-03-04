@@ -114,7 +114,7 @@ net.properties$girth_retained=round(1.14*4*net.properties$Mesh_size)
 #print(net.properties)
 #Calculate the P(W|E) for each length group. P(W|E) is the ratio between fish over net.properties$girth_retained and the total number of fish in each group_size for each net type
 PWE_t=expand.grid(net.properties$Mesh_size,unique(G_max_long$length_group)) %>% 
-   rename(Mesh_size = Var1,
+   dplyr::rename(Mesh_size = Var1,
           length_group = Var2)  %>%
    left_join(net.properties) %>% 
    left_join(G_max_long) %>% 
@@ -122,7 +122,7 @@ PWE_t=expand.grid(net.properties$Mesh_size,unique(G_max_long$length_group)) %>%
    mutate(is.bigger = G_max >= girth_retained) %>% 
    group_by(Mesh_size,length_group) %>% 
    summarize(PWE = sum(is.bigger)/n()) %>%
-  rename(Length_group=length_group)
+  dplyr::rename(Length_group=length_group)
 PWE_t=data.frame(PWE_t)
 print(head(PWE_t))
 Catch.data.Cod=merge(Catch.data.Cod,PWE_t ,by=c("Mesh_size",    "Length_group"))

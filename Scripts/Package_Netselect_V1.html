@@ -149,8 +149,9 @@ $(document).ready(function () {
 </div>
 <div id="description-of-data-and-functions" class="section level3">
 <h3>Description of data and functions</h3>
-<div id="cod_selectivity_data---field-survey-data-for-calculating-selectivity-for-multiple-mesh-size" class="section level5">
-<h5><strong>‘Cod_selectivity_data’</strong> - Field survey data for calculating selectivity for multiple mesh-size</h5>
+<hr />
+<div id="cod_selectivity_data-data--field-survey-data-for-calculating-selectivity-for-multiple-mesh-size" class="section level5">
+<h5><strong>‘Cod_selectivity_data’</strong> (<em>data</em>)- Field survey data for calculating selectivity for multiple mesh-size</h5>
 <p><strong>Description</strong></p>
 <p>The Cod_selectivity_data data frame has 694 rows and 6 columns. This field data was used for calculation of net selectivity for Cod (<em>Gadus morhua</em>)</p>
 <p><strong>Usage</strong></p>
@@ -159,10 +160,12 @@ $(document).ready(function () {
 <p>This data frame contains the following columns:</p>
 <p><strong>Survey_index</strong> - Unique ID for each field trial</p>
 <p><strong>Net_name</strong> - Name of the net used</p>
-<p><strong>Mesh_size</strong> - Mesh size (mm knot-to-knot)</p>
+<p><strong>Mesh_size</strong> - Mesh size (knot to knot) (mm)</p>
 <p><strong>Length_FL</strong> - Fork length (cm)</p>
 <p><strong>Maximal_girth</strong> - Maximal body girth (mm)</p>
 <p><strong>Catch_method</strong> - Tangled or Wedged</p>
+<p><strong>Source</strong></p>
+<p>(Add some Ref. to the data)</p>
 <pre class="r"><code>Cod_selectivity_data &lt;- read.csv(&quot;~/kinneret modeling/selectivity/R code Feodor paper/Lobyerev-selectivity/Data/Cod_selectivity_data.csv&quot;)
 print(head(Cod_selectivity_data ))</code></pre>
 <pre><code>##   Survey_index Net_name Mesh_size Length_FL Maximal_girth Catch_method
@@ -172,6 +175,256 @@ print(head(Cod_selectivity_data ))</code></pre>
 ## 4            1   Net_20        20        18           114       Wedged
 ## 5            1   Net_20        20        22           102       Wedged
 ## 6            1   Net_20        20        24           133       Wedged</code></pre>
+<hr />
+<hr />
+</div>
+<div id="net_properties_data-data--gill-nets-properties-for-calculating-selectivity" class="section level5">
+<h5><strong>‘Net_properties_data’</strong> (<em>data</em>)- Gill nets properties for calculating selectivity</h5>
+<p><strong>Description</strong></p>
+<p>The Cod_selectivity_data data frame has 694 rows and 6 columns. This field data was used for calculation of net selectivity for Cod (<em>Gadus morhua</em>)</p>
+<p><strong>Usage</strong></p>
+<p>Net_properties_data</p>
+<p><strong>Format</strong></p>
+<p>This data frame contains the following columns:</p>
+<p><strong>Mesh_size</strong> - Mesh size (knot to knot) (mm)</p>
+<p><strong>y</strong> - Smaller of the angels between mesh threads (deg)</p>
+<p><strong>Source</strong></p>
+<p>(Add some Ref. to the data)</p>
+<pre class="r"><code>Net_properties_data &lt;- read.csv(&quot;~/kinneret modeling/selectivity/R code Feodor paper/Lobyerev-selectivity/Data/net properties.csv&quot;)
+#Show table:
+print(Net_properties_data)</code></pre>
+<pre><code>##   Mesh_size  y
+## 1        20 60
+## 2        25 60
+## 3        30 60</code></pre>
+<hr />
+<hr />
+</div>
+<div id="mouth_dimension-function--fish-mouth-openning-dimension" class="section level5">
+<h5><strong>‘Mouth_dimension’</strong> (<em>function</em>)- Fish mouth openning dimension</h5>
+<p><strong>Description</strong></p>
+<p>Calculate the height (h) of swimming fish mouth openning</p>
+<p><strong>Usage</strong></p>
+<p>Mouth_dimension(Survey_data = NULL, Net_data = NULL, slope_jaw = NULL, intercept_jaw = NULL, phi = NULL)</p>
+<p><strong>Arguments</strong></p>
+<p>Survey_data - data frame of field survey data containing information on body length (see: ‘Cod_selectivity_data’)</p>
+<p>Net_data - data frame of gill net properties (see: ‘Net_properties_data’)</p>
+<p>slope_jaw - numeric value of the slope term of the linear equation concting body length to jaw length</p>
+<p>intercept_jaw - numeric value of the intercept term of the linear equation concting body length to jaw length</p>
+<p>phi - numeric angle between the ends of upper and lower jaws when the mouth is opened during ram ventilation</p>
+<p><strong>Details</strong></p>
+<p><strong>Value</strong></p>
+<p>Data frame similar to arrgument ‘Survey_data’ with additional columns</p>
+<p><strong>Author(s)</strong></p>
+<p>XXX</p>
+<p><strong>Function structure</strong></p>
+<pre class="r"><code>Mouth_dimension=function(Survey_data,Net_data,slope_jaw,intercept_jaw,phi){
+  ##Add angle in radians to Net_data
+  Net_data$Radian=0.018*Net_data$y
+  ##Transform phi to eadians
+  phi_radian=0.018*phi
+  ##Calculate Jaw length from linear function
+  Survey_data$Jaw_length=intercept_jaw + (slope_jaw*Survey_data$Length_FL)
+  ##Calculate height of mouth openning
+  Survey_data$h=Survey_data$Jaw_length * sin(phi_radian) * 2
+  return(Survey_data)
+}</code></pre>
+<p><strong>Examples</strong></p>
+<pre class="r"><code>Mouth_dimension_output=Mouth_dimension(Survey_data=Cod_selectivity_data,
+                                       Net_data=Net_properties_data,
+                                       slope_jaw=1.02,
+                                       intercept_jaw=3.41,
+                                       phi=7)
+
+print(head(Mouth_dimension_output))</code></pre>
+<pre><code>##   Survey_index Net_name Mesh_size Length_FL Maximal_girth Catch_method
+## 1            1   Net_20        20        16            94       Wedged
+## 2            1   Net_20        20        16            82       Wedged
+## 3            1   Net_20        20        18           116       Wedged
+## 4            1   Net_20        20        18           114       Wedged
+## 5            1   Net_20        20        22           102       Wedged
+## 6            1   Net_20        20        24           133       Wedged
+##   Jaw_length        h
+## 1      19.73 4.958815
+## 2      19.73 4.958815
+## 3      21.77 5.471535
+## 4      21.77 5.471535
+## 5      25.85 6.496977
+## 6      27.89 7.009698</code></pre>
+<hr />
+<hr />
+</div>
+<div id="poc_pthc-function--probabilities-of-contacting-gill-net-at-openning-or-thread" class="section level5">
+<h5><strong>‘POC_PThC’</strong> (<em>function</em>)- Probabilities of contacting gill net at openning or thread</h5>
+<p><strong>Description</strong></p>
+<p>Calculate P(O|C) and P(Th|C).</p>
+<p><strong>Usage</strong></p>
+<p>POC_PThC(Survey_and_mouth_data = NULL, Net_data = NULL)</p>
+<p><strong>Arguments</strong></p>
+<p>Survey_and_mouth_data - data frame of field survey data and mouth openning dimension (an output of function ‘Mouth_dimension’)</p>
+<p>Net_data - data frame of gill net properties (see: ‘Net_properties_data’)</p>
+<p><strong>Details</strong></p>
+<p><strong>Value</strong></p>
+<p>Data frame similar to arrgument ‘Survey_mouth_data’ with additional columns: POC and PThC</p>
+<p><strong>Author(s)</strong></p>
+<p>XXX</p>
+<p><strong>Function structure</strong></p>
+<pre class="r"><code>POC_PthC=function(Survey_and_mouth_data,Net_data){
+  ##Add angle in radians to Net_data
+  Net_data$Radian=0.018*Net_data$y
+  ##Merge gill net properties table to survey data
+  Survey_and_mouth_data=merge(Survey_and_mouth_data,Net_data,by=&quot;Mesh_size&quot;)
+  ##Calculate sin,cos,tan
+  Survey_and_mouth_data$sin=sin(0.5*Survey_and_mouth_data$Radian)
+  Survey_and_mouth_data$cos=cos(0.5*Survey_and_mouth_data$Radian)
+  Survey_and_mouth_data$tan=tan(0.5*Survey_and_mouth_data$Radian)
+  #Calculate P(O|C) Eq. 4
+  Survey_and_mouth_data$POC=(((Survey_and_mouth_data$cos * Survey_and_mouth_data$Mesh_size)-Survey_and_mouth_data$h)*((Survey_and_mouth_data$sin*Survey_and_mouth_data$Mesh_size)-(Survey_and_mouth_data$tan*Survey_and_mouth_data$h)))/(Survey_and_mouth_data$cos*Survey_and_mouth_data$sin*(Survey_and_mouth_data$Mesh_size)^2)
+  #Calculate P(Th|c)
+  Survey_and_mouth_data$PThC=1-Survey_and_mouth_data$POC
+  return(Survey_and_mouth_data)
+}</code></pre>
+<p><strong>Examples</strong></p>
+<pre class="r"><code>##Run function '
+POC_PthC_output=POC_PthC(Survey_and_mouth_data=Mouth_dimension_output,
+                                       Net_data=Net_properties_data)
+
+
+print(head(POC_PthC_output))</code></pre>
+<pre><code>##   Mesh_size Survey_index Net_name Length_FL Maximal_girth Catch_method
+## 1        20            1   Net_20        16            94       Wedged
+## 2        20            1   Net_20        16            82       Wedged
+## 3        20            1   Net_20        18           116       Wedged
+## 4        20            1   Net_20        18           114       Wedged
+## 5        20            1   Net_20        22           102       Wedged
+## 6        20            1   Net_20        24           133       Wedged
+##   Jaw_length        h  y Radian      sin       cos       tan       POC
+## 1      19.73 4.958815 60   1.08 0.514136 0.8577087 0.5994296 0.5054167
+## 2      19.73 4.958815 60   1.08 0.514136 0.8577087 0.5994296 0.5054167
+## 3      21.77 5.471535 60   1.08 0.514136 0.8577087 0.5994296 0.4638123
+## 4      21.77 5.471535 60   1.08 0.514136 0.8577087 0.5994296 0.4638123
+## 5      25.85 6.496977 60   1.08 0.514136 0.8577087 0.5994296 0.3859636
+## 6      27.89 7.009698 60   1.08 0.514136 0.8577087 0.5994296 0.3497193
+##        PThC
+## 1 0.4945833
+## 2 0.4945833
+## 3 0.5361877
+## 4 0.5361877
+## 5 0.6140364
+## 6 0.6502807</code></pre>
+<hr />
+<hr />
+</div>
+<div id="peo-function--probabilities-of-fish-entering-net-openning-if-contacted-an-openning" class="section level5">
+<h5><strong>‘PEO’</strong> (<em>function</em>)- Probabilities of fish entering net openning if contacted an openning</h5>
+<p><strong>Description</strong></p>
+<p>Calculate P(E|O).</p>
+<p><strong>Usage</strong></p>
+<p>PEO(Survey_data = NULL, Net_data = NULL, length_group_bin=2)</p>
+<p><strong>Arguments</strong></p>
+<p>Survey_data - data frame of field survey data containing information on body length (see: ‘Cod_selectivity_data’)</p>
+<p>Net_data - data frame of gill net properties (see: ‘Net_properties_data’)</p>
+<p>length_group_bin - numeric value of the bin size used to aggregate fish to length groups</p>
+<p><strong>Details</strong></p>
+<p><strong>Value</strong></p>
+<p>Data frame similar to arrgument ‘Survey_data’ with additional columns: PWE</p>
+<p><strong>Author(s)</strong></p>
+<p>XXX</p>
+<p><strong>Function structure</strong></p>
+<pre class="r"><code>PEO=function(Survey_data,Net_data,length_group_bin=2){
+  #Create length groups based on fish FL
+  Survey_data$Length_group=length_group_bin*round(Survey_data$Length_FL/length_group_bin)
+  #The minimal and maximal size of wedged fish in net type
+  net_PEO=data.frame(Survey_data %&gt;%
+                       filter(Catch_method==&quot;Wedged&quot;) %&gt;%
+                       group_by(Mesh_size) %&gt;%
+                       summarize(min_FL = min(Length_group, na.rm = TRUE),
+                                 max_FL = max(Length_group, na.rm = TRUE))%&gt;%
+                       left_join(Net_data))
+  #Substract and add the Length group interval
+  net_PEO$min_FL=net_PEO$min_FL-(length_group_bin/2)
+  net_PEO$max_FL=net_PEO$max_FL-(length_group_bin/2)
+  #Calculate the linear function
+  net_PEO$slope=-1/(net_PEO$max_FL-net_PEO$min_FL)
+  net_PEO$intercept=1-(net_PEO$slope*net_PEO$min_FL)
+  #Calculate PEO
+  #Merge slope and intercept to data
+  Survey_data=merge(Survey_data,net_PEO,by=&quot;Mesh_size&quot;)
+  Survey_data$PEO=Survey_data$intercept+(Survey_data$Length_group)*Survey_data$slope
+  #Remove PEO values if no fish were wedged
+  Survey_data[is.na(Survey_data$Wedged),&quot;PEO&quot;]=NA
+  return(Survey_data)
+}</code></pre>
+<p><strong>Examples</strong></p>
+<pre class="r"><code>##Run function '
+PEO_output=PEO(Survey_data=Cod_selectivity_data,Net_data=Net_properties_data,length_group_bin=2)</code></pre>
+<pre><code>## Joining, by = &quot;Mesh_size&quot;</code></pre>
+<pre class="r"><code>print(head(PEO_output))</code></pre>
+<pre><code>##   Mesh_size Survey_index Net_name Length_FL Maximal_girth Catch_method
+## 1        20            1   Net_20        16            94       Wedged
+## 2        20            1   Net_20        16            82       Wedged
+## 3        20            1   Net_20        18           116       Wedged
+## 4        20            1   Net_20        18           114       Wedged
+## 5        20            1   Net_20        22           102       Wedged
+## 6        20            1   Net_20        24           133       Wedged
+##   Length_group min_FL max_FL  y   slope intercept    PEO
+## 1           16     13     29 60 -0.0625    1.8125 0.8125
+## 2           16     13     29 60 -0.0625    1.8125 0.8125
+## 3           18     13     29 60 -0.0625    1.8125 0.6875
+## 4           18     13     29 60 -0.0625    1.8125 0.6875
+## 5           22     13     29 60 -0.0625    1.8125 0.4375
+## 6           24     13     29 60 -0.0625    1.8125 0.3125</code></pre>
+<hr />
+<hr />
+</div>
+<div id="pwe-function--probabilities-of-fish-being-wedged-if-entered-net-openning" class="section level5">
+<h5><strong>‘PWE’</strong> (<em>function</em>)- Probabilities of fish being wedged if entered net openning</h5>
+<p><strong>Description</strong></p>
+<p>Calculate P(W|E).</p>
+<p><strong>Usage</strong></p>
+<p>PWE(Survey_data = NULL, Net_data = NULL, length_group_bin=2)</p>
+<p><strong>Arguments</strong></p>
+<p>Survey_data - data frame of field survey data containing information on body length (see: ‘Cod_selectivity_data’)</p>
+<p>Net_data - data frame of gill net properties (see: ‘Net_properties_data’)</p>
+<p>length_group_bin - numeric value of the bin size used to aggregate fish to length groups</p>
+<p><strong>Details</strong></p>
+<p><strong>Value</strong></p>
+<p>Data frame similar to arrgument ‘Survey_data’ with additional columns: PWE</p>
+<p><strong>Author(s)</strong></p>
+<p>XXX</p>
+<p><strong>Function structure</strong></p>
+<pre class="r"><code>PWE=function(Survey_data,Net_data,length_group_bin=2){
+  ##Calculate the girth retained in mesh size
+ Net_data$girth_retained=round(1.14*4*Net_data$Mesh_size)
+ #Create length groups based on fish FL
+ Survey_data$Length_group=length_group_bin*round(Survey_data$Length_FL/length_group_bin) 
+  #Calculate the P(W|E) for each length group. 
+  PWE=expand.grid(Net_data$Mesh_size,unique(Survey_data$Length_group)) %&gt;% 
+    dplyr::rename(Mesh_size = Var1,
+           Length_group = Var2)  %&gt;%
+    left_join(Net_data) %&gt;% 
+    left_join(Survey_data) %&gt;% 
+    select(Mesh_size,girth_retained,Length_group,Maximal_girth) %&gt;% 
+    mutate(is.bigger = Maximal_girth &gt;= girth_retained) %&gt;% 
+    group_by(Mesh_size,Length_group) %&gt;% 
+    summarize(PWE = sum(is.bigger)/n()) 
+  PWE=data.frame(PWE)
+  return(PWE)
+}</code></pre>
+<p><strong>Examples</strong></p>
+<pre class="r"><code>##Run function '
+PWE_output=PWE(Survey_data=Cod_selectivity_data,Net_data=Net_properties_data,length_group_bin=2)</code></pre>
+<pre><code>## Joining, by = &quot;Mesh_size&quot;</code></pre>
+<pre><code>## Joining, by = c(&quot;Mesh_size&quot;, &quot;Length_group&quot;)</code></pre>
+<pre class="r"><code>print(head(PWE_output))</code></pre>
+<pre><code>##   Mesh_size Length_group       PWE
+## 1        20           14 0.0000000
+## 2        20           16 0.6400000
+## 3        20           18 0.8518519
+## 4        20           20 0.9473684
+## 5        20           22 1.0000000
+## 6        20           24 1.0000000</code></pre>
+<hr />
 </div>
 </div>
 
